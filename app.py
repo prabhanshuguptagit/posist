@@ -10,6 +10,7 @@ document = {}
 
 nodeCount = 0
 genesisReferenceNode = False
+padding_character = "{"
 
 #AES code from https://gist.github.com/syedrakib/d71c463fc61852b8d366
 
@@ -40,6 +41,7 @@ def encrypt_message(private_msg, encoded_secret_key, padding_character):
 
 def decrypt_message(encoded_encrypted_msg, encoded_secret_key, padding_character):
 	# decode the encoded encrypted message and encoded secret key
+	print encoded_secret_key
 	secret_key = base64.b64decode(encoded_secret_key)
 	encrypted_msg = base64.b64decode(encoded_encrypted_msg)
 	# use the decoded secret key to create a AES cipher
@@ -62,18 +64,18 @@ class Node:
 	hashValue = ''
 
 	def encrypt(self):
+		global padding_character
 		global generate_secret_key_for_AES_cipher
 		global encrypt_message
-		padding_character = "{"
 		secret_key = generate_secret_key_for_AES_cipher()
 		self.data = encrypt_message(self.data, secret_key, padding_character)
 		return secret_key
 
-	def decrypt(self, key):
+	def decrypt(self, secret_key):
 		global decrypt_message
-		padding_character = "{"
+		global padding_character
 		decrypted_msg = decrypt_message(self.data, secret_key, padding_character)
-		return decrypt_message
+		return decrypted_msg
 
 	def __init__(self, value, ownerId, ownerName, parentNode= None):
 		global genesisReferenceNode
@@ -99,25 +101,31 @@ class Node:
 
 		self.data = str(ownerId) + ';' +  str(value) + ';' + str(ownerName) + ';' + md5(str(value) + str(ownerId) + str(ownerName)).hexdigest()
 
-		# print("Data is: " + self.data)
-		print("===================")
-		print("Record created")
-		print self
-		print("Secret key is" + self.encrypt())
-
-		# print("Encrypted data is: " + self.data)
 
 		nodeCount = nodeCount + 1
 		self.nodeNumber = nodeCount
 
 		document[self.nodeId] = self
+
+		self.print_details()
+		
+
+	def print_details(self):
+
+		# print("Data is: " + self.data)
+		print("===================")
+		print("Record created")
+		print self
+		print("Secret key is: " + self.encrypt())
+
+		# print("Encrypted data is: " + self.data)
+
 		print("Number of nodes: " + str(nodeCount))
 
 		print("===================")
 
-
 	def __str__(self):
-		return str("NodeID: " + str(self.nodeId) + " \n1Children : [" + ', '.join([str(x) for x in self.childReferenceNodeId])  + "]") 
+		return str("Record ID: " + str(self.nodeId) + " \nChildren : [" + ', '.join([str(x) for x in self.childReferenceNodeId])  + "]") 
 
 def createNode():
 	ownerName = raw_input("Enter Your name: ")
@@ -129,6 +137,18 @@ def createNode():
 	else:
 		parentNode = raw_input("Enter parent Node ID: ")
 		node = Node(value, ownerId, ownerName, parentNode)
+
+def viewNode():
+	nodeId = raw_input("Enter Record ID: ")
+	secretKey = raw_input("Enter secret key: ")
+
+	try:
+		node = document[long(float(nodeId))]
+	except:
+		print "Record not found"
+		return ''
+	print node.decrypt(secretKey)
+
 
 def main():
 	input = 1
@@ -145,6 +165,8 @@ def main():
 		if input == '1':
 			createNode()
 		
+		if input == '2':
+			viewNode()
 
 
 
