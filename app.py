@@ -91,6 +91,7 @@ class Node:
 		self.referenceNodeId = parentNode
 		self.childReferenceNodeId = []
 
+		# Check if children's sum is less than parent
 		# for nodes in document[parentNode].childReferenceNodeId:
 		# 	pass #check values
 
@@ -147,8 +148,28 @@ def viewNode():
 	except:
 		print "Record not found"
 		return ''
+	print node.decrypt(secretKey).split(';')[1]
+
+def editNode():
+	nodeId = raw_input("Enter Record ID: ")
+	secretKey = raw_input("Enter secret key: ")
+
+	try:
+		node = document[long(float(nodeId))]
+	except:
+		print "Record not found"
+		return ''
 	print node.decrypt(secretKey)
 
+	ownerName = raw_input("Enter Your name: ")
+	ownerId = raw_input("Enter Your ID: ")
+	value = raw_input("Enter Value: ")
+
+	if( genesisReferenceNode == False ):
+		node = Node(value, ownerId, ownerName)
+	else:
+		parentNode = raw_input("Enter parent Node ID: ")
+		node = Node(value, ownerId, ownerName, parentNode)
 
 def main():
 	input = 1
@@ -158,6 +179,7 @@ def main():
 		==================================
 		[1]: Add new record
 		[2]: View record
+		[3]: Edit record
 		[0]: Exit
 		'''
 		input = raw_input()
@@ -168,6 +190,8 @@ def main():
 		if input == '2':
 			viewNode()
 
+		# if input == '3':
+		# 	editNode()
 
 
     # node2 = Node(2.01, 'prabhanshu@gmail', 'prabhanshu', node1.nodeId)
