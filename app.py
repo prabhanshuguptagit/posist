@@ -161,14 +161,14 @@ def editNode():
 		return ''
 	print node.decrypt(secretKey)
 
-	ownerName = raw_input("Enter Your name: ")
-	ownerId = raw_input("Enter Your ID: ")
+	ownerName = raw_input("Enter new owner name: ")
+	ownerId = raw_input("Enter new owner ID: ")
 	value = raw_input("Enter Value: ")
 
 	if( genesisReferenceNode == False ):
 		node = Node(value, ownerId, ownerName)
 	else:
-		parentNode = raw_input("Enter parent Node ID: ")
+		parentNode = raw_input("Enter new parent Node ID: ")
 		node = Node(value, ownerId, ownerName, parentNode)
 
 def main():
