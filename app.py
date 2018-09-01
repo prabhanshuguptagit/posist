@@ -148,7 +148,7 @@ def viewNode():
 	except:
 		print "Record not found"
 		return ''
-	print node.decrypt(secretKey).split(';')[1]
+	print "Record value is: " + node.decrypt(secretKey).split(';')[1]
 
 def editNode():
 	nodeId = raw_input("Enter Record ID: ")
