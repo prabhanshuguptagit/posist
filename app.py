@@ -1,3 +1,4 @@
+#!/usr/bin/python -u
 import datetime
 import random
 from hashlib import md5
@@ -9,6 +10,8 @@ document = {}
 
 nodeCount = 0
 genesisReferenceNode = False
+
+#AES code from https://gist.github.com/syedrakib/d71c463fc61852b8d366
 
 def generate_secret_key_for_AES_cipher():
 	# AES key length must be either 16, 24, or 32 bytes long
@@ -59,7 +62,6 @@ class Node:
 	hashValue = ''
 
 	def encrypt(self):
-	#AES code from https://gist.github.com/syedrakib/d71c463fc61852b8d366
 		global generate_secret_key_for_AES_cipher
 		global encrypt_message
 		padding_character = "{"
@@ -89,34 +91,67 @@ class Node:
 
 		# for nodes in document[parentNode].childReferenceNodeId:
 		# 	pass #check values
+
 		if(parentNode is not None):
+			print("Creating Genesis node...")
 			document[parentNode].childReferenceNodeId.append({self.nodeId : self})
 		# self.hashValue = ''
 
 		self.data = str(ownerId) + ';' +  str(value) + ';' + str(ownerName) + ';' + md5(str(value) + str(ownerId) + str(ownerName)).hexdigest()
 
-		print("Data is: " + self.data)
+		# print("Data is: " + self.data)
+		print("===================")
+		print("Record created")
+		print self
 		print("Secret key is" + self.encrypt())
-		print("Encrypted data is: " + self.data)
+
+		# print("Encrypted data is: " + self.data)
 
 		nodeCount = nodeCount + 1
 		self.nodeNumber = nodeCount
 
 		document[self.nodeId] = self
-		print("nodeCount = " + str(nodeCount))
+		print("Number of nodes: " + str(nodeCount))
+
+		print("===================")
+
 
 	def __str__(self):
-		return str(str(self.nodeId) + " Children : [" + ', '.join([str(x) for x in self.childReferenceNodeId])  + "]") 
+		return str("NodeID: " + str(self.nodeId) + " \n1Children : [" + ', '.join([str(x) for x in self.childReferenceNodeId])  + "]") 
+
+def createNode():
+	ownerName = raw_input("Enter Your name: ")
+	ownerId = raw_input("Enter Your ID: ")
+	value = raw_input("Enter Value: ")
+
+	if( genesisReferenceNode == False ):
+		node = Node(value, ownerId, ownerName)
+	else:
+		parentNode = raw_input("Enter parent Node ID: ")
+		node = Node(value, ownerId, ownerName, parentNode)
 
 def main():
-    node1 = Node(5.01, 'arun@123', 'arun')
-    # Node(value, ownerID, ownerName)
-    print node1
+	input = 1
+	while input != 0:
+		print '''
+		Menu:
+		==================================
+		[1]: Add new record
+		[2]: View record
+		[0]: Exit
+		'''
+		input = raw_input()
 
-    node2 = Node(2.01, 'prabhanshu@gmail', 'prabhanshu', node1.nodeId)
+		if input == '1':
+			createNode()
+		
 
-    print node2
-    print node1 
+
+
+    # node2 = Node(2.01, 'prabhanshu@gmail', 'prabhanshu', node1.nodeId)
+
+    # print node2
+    # print node1 
 
 if __name__ == "__main__":
     main()
